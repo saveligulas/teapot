@@ -32,25 +32,31 @@ public class PushFilterPool<T> implements Pipe<T> {
     }
 
     private void startDispatcher() {
-        Thread.startVirtualThread(() -> {
-            try {
-                while (true) {
-                    T item = queue.take(); // wait for input
-                    ThreadedPushFilter<T> filter = filterPool.take(); // waits for available filter
-                    filter.setInput(item);
-                    threadPool.submit(() -> {
-                        filter.run(); // run it
-                        try {
-                            filterPool.put(filter); // return to pool when done
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    });
+        Thread.startVirtualThread(this::dispatchNext);
+    }
+
+    private void dispatchNext() {
+        try {
+            T item = queue.take(); // blocks until available
+            ThreadedPushFilter<T> filter = filterPool.take();
+
+            filter.setInput(item);
+            threadPool.submit(() -> {
+                try {
+                    filter.run();
+                } finally {
+                    try {
+                        filterPool.put(filter);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        });
+                // Continue dispatching after current task
+                dispatchNext();
+            });
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     @Override

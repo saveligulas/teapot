@@ -32,7 +32,7 @@ public class Main {
                     }
 
                     @Override
-                    public void consume(String s) {
+                    public void transformThenPipe(String s) {
                         setInput(s);
                         run();
                     }
