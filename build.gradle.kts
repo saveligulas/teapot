@@ -11,6 +11,10 @@ repositories {
     mavenCentral()
 }
 
+application {
+    mainClass.set("com.sagu.fhv.Main")
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
