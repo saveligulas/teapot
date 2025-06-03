@@ -16,6 +16,6 @@ import java.util.concurrent.Executors;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        Application.launch(TeapotApplication.class, args);
+        Application.launch(SingleTeapotApplication.class, args);
     }
 }

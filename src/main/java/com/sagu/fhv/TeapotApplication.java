@@ -2,7 +2,7 @@ package com.sagu.fhv;
 
 import com.sagu.fhv.model.ObjLoader;
 import com.sagu.fhv.pipeline.PipelineData;
-import com.sagu.fhv.pipeline.PushPipelineFactory;
+import com.sagu.fhv.pipeline.SimplePipelineFactory;
 import com.sagu.fhv.render.RenderingMode;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -68,10 +68,10 @@ public class TeapotApplication extends Application {
                     .setModelRotAxis(new Vector3f(1, 0, 0))
                     .build();
             
-            AnimationTimer anim1 = PushPipelineFactory.createPipeline(pd1);
-            AnimationTimer anim2 = PushPipelineFactory.createPipeline(pd2);
-            AnimationTimer anim3 = PushPipelineFactory.createPipeline(pd3);
-            AnimationTimer anim4 = PushPipelineFactory.createPipeline(pd4);
+            AnimationTimer anim1 = SimplePipelineFactory.createPipeline(pd1);
+            AnimationTimer anim2 = SimplePipelineFactory.createPipeline(pd2);
+            AnimationTimer anim3 = SimplePipelineFactory.createPipeline(pd3);
+            AnimationTimer anim4 = SimplePipelineFactory.createPipeline(pd4);
             
             anim1.start();
             anim2.start();

@@ -17,8 +17,8 @@ public class JavaFXRenderer implements Filter<OptimizedFace> {
     private final double width;
     private final double height;
     private volatile Pipe<OptimizedFace> outputPipe;
-    
-    // Buffer für Faces die gerendert werden sollen
+    private int renderCount = 0;
+
     private final ConcurrentLinkedQueue<RenderCommand> renderQueue = new ConcurrentLinkedQueue<>();
     
     private static class RenderCommand {
@@ -62,9 +62,13 @@ public class JavaFXRenderer implements Filter<OptimizedFace> {
         if (!isVisible(x1, y1) && !isVisible(x2, y2) && !isVisible(x3, y3)) {
             return;
         }
-        
-        // Queue render command statt direkt zu rendern
+
         renderQueue.offer(new RenderCommand(x1, y1, x2, y2, x3, y3, mode, color.get()));
+        renderCount++;
+        if (renderCount <= 5) {
+            //System.out.println("Renderer queued face " + renderCount + " at (" +
+                              //String.format("%.1f, %.1f", x1, y1) + ")");
+        }
     }
     
     @Override
@@ -82,6 +86,7 @@ public class JavaFXRenderer implements Filter<OptimizedFace> {
             return;
         }
         
+        int flushed = 0;
         RenderCommand cmd;
         while ((cmd = renderQueue.poll()) != null) {
             switch (cmd.mode) {
@@ -108,7 +113,16 @@ public class JavaFXRenderer implements Filter<OptimizedFace> {
                     );
                     break;
             }
+            flushed++;
         }
+        
+        if (flushed > 0) {
+            //System.out.println("Renderer flushed " + flushed + " commands");
+        }
+    }
+    
+    public int getQueueSize() {
+        return renderQueue.size();
     }
     
     private boolean isVisible(double x, double y) {
